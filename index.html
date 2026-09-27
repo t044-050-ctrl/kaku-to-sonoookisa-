@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>算数4年 角とその大きさ</title>
+  <style>
+    /* RESET & BASE */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      min-height: 100vh;
+      background-color: #ffffff; /* WHITE BACKGROUND OUTSIDE */
+      color: #1e293b;
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      overflow: hidden; /* DISABLE OVERFLOW & PINCH ZOOM */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      touch-action: manipulation; /* DISABLE PINCH ZOOM */
+      user-select: none;
+    }
+
+    /* 16:9 VIEWPORT CONTAINER - NO FRAME / NO SHADOW */
+    .app-screen {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 Aspect */
+      max-height: 100vh;
+      max-width: 177.78vh;
+      background-color: #ffffff;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: none;
+      border: none;
+      touch-action: manipulation;
+    }
+
+    /* HOME BUTTON (BOTTOM RIGHT - MATCHES 1-9 BUTTON SIZE 48x48) */
+    .home-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      background-color: #ffffff;
+      border: 2.5px solid #2563eb;
+      color: #2563eb;
+      border-radius: 10px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      transition: all 0.2s ease;
+    }
+
+    /* HOUSE ICON ENLARGED WITHIN BUTTON */
+    .home-btn svg {
+      width: 38px;
+      height: 38px;
+      fill: currentColor;
+    }
+
+    /* GENERAL BUTTON STYLES */
+    button, .btn {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      touch-action: manipulation;
+    }
+
+    button:active, .btn:active {
+      transform: scale(0.95);
+    }
+
+    /* TOP PAGE (MENU) STYLES */
+    .menu-page {
+      display: flex;
+      height: 100%;
+      padding: 16px;
+      justify-content: center;
+      align-items: center;
+      background-color: #ffffff;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 16px;
+      width: 95%;
+      max-width: 820px;
+      height: 85%;
+      max-height: 460px;
+      transform: scale(0.92);
+      transform-origin: center center;
+    }
+
+    .grid-cell {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    /* TITLE CONTAINER - TEXT COLOR #20429C */
+    .menu-title-container {
+      background: transparent;
+      box-shadow: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-title-text {
+      color: #20429C;
+      font-size: 1.55rem;
+      font-weight: 900;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .menu-title-protractor-icon {
+      margin-top: 6px;
+      transform: rotate(-12deg);
+      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.15));
+    }
+
+    .menu-btn {
+      background-color: #ffffff;
+      color: #1e293b;
+      border: 3px solid #2563eb;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      background-color: #2563eb;
+      color: #ffffff;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+    }
+
+    /* LEARNING PAGES BASE */
+    .page {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background-color: #ffffff;
+      padding: 12px;
+    }
+
+    .page.active {
+      display: flex;
+    }
+
+    /* PAGE 1: OUGI */
+    #page1 {
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .p1-canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      touch-action: none;
+    }
+
+    /* 「角のしくみ」ボタン：右上配置 */
+    .p1-btn-desc {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: 2px solid #2563eb;
+      font-size: 1rem;
+      font-weight: 800;
+      padding: 8px 18px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      z-index: 20;
+    }
+
+    .p1-rotation-badge {
+      position: absolute;
+      top: 72%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f59e0b;
+      color: #ffffff;
+      font-size: 1.6rem;
+      font-weight: 800;
+      padding: 6px 22px;
+      border-radius: 30px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+      z-index: 20;
+      display: none;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.06); }
+    }
+
+    .p1-bottom-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      touch-action: none;
+    }
+
+    .p1-num-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .num-btn {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      background-color: #ffffff;
+      color: #2563eb;
+      border: 2.5px solid #2563eb;
+      border-radius: 10px;
+      font-size: 1.3rem;
+      font-weight: 800;
+    }
+    .num-btn:hover, .num-btn.active {
+      background-color: #2563eb;
+      color: #ffffff;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(3px);
+      justify-content: center;
+      align-items: center;
+      z-index: 600;
+    }
+
+    .modal-content {
+      width: 75%;
+      height: 75%;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 3px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .modal-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .modal-body p {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #334155;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 1.3rem;
+      border-radius: 10px;
+    }
+
+    /* QUIZ & WORKSPACE LAYOUT */
+    .quiz-layout {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      background-color: #f8fafc;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      z-index: 10;
+      border: 1px solid #e2e8f0;
+    }
+
+    .quiz-question-text {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+
+    .quiz-control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .video-link-btn {
+      background-color: #059669;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .angle-select-container {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 2px solid #2563eb;
+      border-radius: 10px;
+      padding: 2px 4px;
+      gap: 2px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .angle-step-btn {
+      width: 28px;
+      height: 38px;
+      padding: 0;
+      background-color: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .angle-step-btn:active {
+      background-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .angle-dropdown {
+      height: 38px;
+      border: none;
+      outline: none;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      background: transparent;
+      padding: 0 4px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .quiz-canvas-area {
+      flex: 1;
+      position: relative;
+      background-color: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .draggable-tool {
+      position: absolute;
+      cursor: move;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .blue-rotation-handle {
+      position: absolute;
+      width: 34px;
+      height: 34px;
+      background-color: #2563eb;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      cursor: grab;
+      z-index: 60;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+    }
+    .blue-rotation-handle svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .correct-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 400;
+    }
+    .correct-overlay.active {
+      display: flex;
+    }
+    .correct-circle-svg {
+      width: 280px;
+      height: 280px;
+      animation: popCircle 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes popCircle {
+      0% { transform: scale(0); opacity: 0; }
+      70% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .flip-btn-mini {
+      position: absolute;
+      z-index: 70;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 50%;
+      background: #2563eb;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 900;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- 16:9 APPLICATION SCREEN -->
+  <div class="app-screen">
+
+    <!-- HOME BUTTON (BOTTOM RIGHT) -->
+    <button id="btnHome" class="home-btn" onclick="goToHome()" title="目次に戻る">
+      <svg viewBox="0 0 24 24">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+    </button>
+
+    <!-- TOP MENU PAGE -->
+    <div id="pageMenu" class="page menu-page active">
+      <div class="menu-grid">
+        <div class="grid-cell menu-title-container">
+          <div class="menu-title-text">
+            4年 算数<br>角とその大きさ
+          </div>
+          <svg class="menu-title-protractor-icon" width="60" height="32" viewBox="0 0 120 65">
+            <path d="M 5 60 A 55 55 0 0 1 115 60 Z" fill="#20429C" opacity="0.15"/>
+            <path d="M 5 60 A 55 55 0 0 1 115 60 Z" fill="none" stroke="#20429C" stroke-width="2"/>
+            <line x1="5" y1="60" x2="115" y2="60" stroke="#20429C" stroke-width="2"/>
+            <circle cx="60" cy="60" r="3" fill="#20429C"/>
+            <line x1="60" y1="60" x2="60" y2="10" stroke="#20429C" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <button class="grid-cell menu-btn" onclick="showPage('page1')">1. おうぎで角づくり</button>
+        <button class="grid-cell menu-btn" onclick="showPage('page2')">2. 分度器の使い方</button>
+        <button class="grid-cell menu-btn" onclick="showPage('page3')">3. 角の大きさをはかろう</button>
+        <button class="grid-cell menu-btn" onclick="showPage('page4')">4. 三角定規を使って</button>
+        <button class="grid-cell menu-btn" onclick="showPage('page5')">5. 180°をこえる角</button>
+      </div>
+    </div>
+
+    <!-- PAGE 1: おうぎで角づくり -->
+    <div id="page1" class="page">
+      <button class="btn p1-btn-desc" onclick="openModal('modalP1')">角のしくみ</button>
+
+      <div id="p1Badge" class="p1-rotation-badge">半回転</div>
+      <div class="p1-canvas-container" id="p1Container">
+        <canvas id="cvs1"></canvas>
+      </div>
+
+      <!-- BUTTONS 1~9 -->
+      <div class="p1-bottom-bar">
+        <div class="p1-num-row" id="p1NumBar">
+          <button class="num-btn" data-deg="0" onclick="setP1Angle(0)">1</button>
+          <button class="num-btn" data-deg="45" onclick="setP1Angle(45)">2</button>
+          <button class="num-btn" data-deg="90" onclick="setP1Angle(90)">3</button>
+          <button class="num-btn" data-deg="135" onclick="setP1Angle(135)">4</button>
+          <button class="num-btn" data-deg="180" onclick="setP1Angle(180)">5</button>
+          <button class="num-btn" data-deg="225" onclick="setP1Angle(225)">6</button>
+          <button class="num-btn" data-deg="270" onclick="setP1Angle(270)">7</button>
+          <button class="num-btn" data-deg="315" onclick="setP1Angle(315)">8</button>
+          <button class="num-btn" data-deg="360" onclick="setP1Angle(360)">9</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: 分度器の使い方 -->
+    <div id="page2" class="page">
+      <div class="quiz-layout">
+        <div class="quiz-header">
+          <div id="p2QuestionText" class="quiz-question-text">この角の大きさは何度でしょう？</div>
+          <div class="quiz-control-group">
+            <div class="angle-select-container">
+              <button class="angle-step-btn" onclick="stepAngle('p2Select', -5)">▼</button>
+              <select id="p2Select" class="angle-dropdown"></select>
+              <button class="angle-step-btn" onclick="stepAngle('p2Select', 5)">▲</button>
+            </div>
+            <button class="btn" style="background-color:#2563eb; color:#fff;" onclick="checkP2Answer()">答え合わせ</button>
+            
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+              <button class="btn" style="background-color:#f1f5f9; color:#334155; padding: 5px 12px; font-size: 0.95rem; border: 1.5px solid #2563eb;" onclick="randomP2Question()">練習問題 🎲</button>
+              <div style="display: flex; gap: 6px;">
+                <button class="btn" style="background-color:#2563eb; color:#fff; padding: 3px 10px; font-size: 0.85rem;" onclick="openModal('modalP2')">角度</button>
+                <button class="btn" style="background-color:#0284c7; color:#fff; padding: 3px 10px; font-size: 0.85rem;" onclick="openModal('modalP2RightAngle')">直角</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <div class="quiz-canvas-area" id="p2Area">
+          <canvas id="cvs2"></canvas>
+          <div id="p2CorrectOverlay" class="correct-overlay">
+            <svg class="correct-circle-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="12"/>
+            </svg>
+          </div>
+          <div id="prot2" class="draggable-tool" style="left: 40px; top: 40px; z-index: 100;">
+            <svg id="svgProt2" width="495" height="262.5" viewBox="0 0 330 175"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: 角の大きさをはかろう -->
+    <div id="page3" class="page">
+      <div class="quiz-layout">
+        <div class="quiz-header">
+          <div id="p3QuestionText" class="quiz-question-text">問1:　傾いた角の大きさをはかろう</div>
+          <div class="quiz-control-group">
+            <div class="angle-select-container">
+              <button class="angle-step-btn" onclick="stepAngle('p3Select', -5)">▼</button>
+              <select id="p3Select" class="angle-dropdown"></select>
+              <button class="angle-step-btn" onclick="stepAngle('p3Select', 5)">▲</button>
+            </div>
+            <button class="btn" style="background-color:#2563eb; color:#fff;" onclick="checkP3Answer()">答え合わせ</button>
+            <button class="btn" style="background-color:#f1f5f9; color:#334155; border: 1.5px solid #2563eb;" onclick="randomP3Question()">練習問題 🎲</button>
+          </div>
+        </div>
+        <div class="quiz-canvas-area" id="p3Area">
+          <canvas id="cvs3"></canvas>
+          <div id="p3CorrectOverlay" class="correct-overlay">
+            <svg class="correct-circle-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="12"/>
+            </svg>
+          </div>
+          <div id="prot3Wrapper" class="draggable-tool" style="left: 40px; top: 40px; transform: rotate(0deg); z-index: 100;">
+            <div id="rotHandle3" class="blue-rotation-handle" style="top: -14px; left: 230.5px;" title="回転">
+              <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            </div>
+            <div id="prot3">
+              <svg id="svgProt3" width="495" height="262.5" viewBox="0 0 330 175"></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 4: 三角定規を使って -->
+    <div id="page4" class="page">
+      <div class="quiz-layout">
+        <div class="quiz-header">
+          <div id="p4QuestionText" class="quiz-question-text">45°と30°をあわせた角は何度？</div>
+          <div class="quiz-control-group">
+            <div class="angle-select-container">
+              <button class="angle-step-btn" onclick="stepAngle('p4Select', -5)">▼</button>
+              <select id="p4Select" class="angle-dropdown"></select>
+              <button class="angle-step-btn" onclick="stepAngle('p4Select', 5)">▲</button>
+            </div>
+            <button id="btnP4Check" class="btn" style="background-color:#2563eb; color:#fff;" onclick="checkP4Answer()">答え合わせ</button>
+            <button class="btn" style="background-color:#0284c7; color:#fff;" onclick="toggleP4Protractor()">分度器を出す/かくす</button>
+            <button class="btn" style="background-color:#f1f5f9; color:#334155; border: 1.5px solid #2563eb;" onclick="randomP4Question()">練習問題 🎲</button>
+            <button class="btn" style="background-color:#f1f5f9; color:#334155;" onclick="resetP4SetSquares()">リセット</button>
+          </div>
+        </div>
+        <div class="quiz-canvas-area" id="p4Area">
+          <canvas id="cvs4" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+          <div id="p4CorrectOverlay" class="correct-overlay">
+            <svg class="correct-circle-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="12"/>
+            </svg>
+          </div>
+
+          <div id="prot4Wrapper" class="draggable-tool" style="left: 550px; top: 20px; display: none; transform: rotate(0deg); z-index: 100;">
+            <div id="rotHandle4" class="blue-rotation-handle" style="top: -14px; left: 181px;" title="回転">
+              <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            </div>
+            <div id="prot4">
+              <svg id="svgProt4" width="396" height="210" viewBox="0 0 330 175"></svg>
+            </div>
+          </div>
+
+          <div id="sq45Wrapper" class="draggable-tool" style="left: 40px; top: 40px; z-index: 101;">
+            <div id="sq45Inner" style="position:relative;">
+              <div id="rotHandle45" class="blue-rotation-handle" style="top: 150px; left: 100px;" title="回転">
+                <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+              </div>
+              <button class="flip-btn-mini" onclick="flipSquare('sq45Svg')" style="top: 150px; left: 150px;" title="反転">↔</button>
+              <svg id="sq45Svg" width="270" height="270" viewBox="0 0 270 270" data-flipped="true" style="transform: scaleX(-1); transition: transform 0.2s ease;">
+                <polygon points="10,260 264.56,260 10,5.44" fill="rgba(224, 242, 254, 0.75)" stroke="#334155" stroke-width="3"/>
+                <g class="corner-group" onclick="toggleCornerDegText(this, '90°')">
+                  <circle cx="20" cy="250" r="32" fill="transparent"/>
+                  <text class="corner-text" x="28" y="248" font-size="15" font-weight="900" fill="#20429C" text-anchor="start"></text>
+                </g>
+                <g class="corner-group" onclick="toggleCornerDegText(this, '45°')">
+                  <circle cx="250" cy="250" r="32" fill="transparent"/>
+                  <text class="corner-text" x="235" y="250" font-size="15" font-weight="900" fill="#20429C" text-anchor="end"></text>
+                </g>
+                <g class="corner-group" onclick="toggleCornerDegText(this, '45°')">
+                  <circle cx="20" cy="20" r="32" fill="transparent"/>
+                  <text class="corner-text" x="22" y="38" font-size="15" font-weight="900" fill="#20429C" text-anchor="start"></text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <div id="sq30Wrapper" class="draggable-tool" style="left: 360px; top: 40px; z-index: 102;">
+            <div id="sq30Inner" style="position:relative;">
+              <div id="rotHandle30" class="blue-rotation-handle" style="top: 180px; left: 60px;" title="回転">
+                <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+              </div>
+              <button class="flip-btn-mini" onclick="flipSquare('sq30Svg')" style="top: 180px; left: 110px;" title="反転">↔</button>
+              <svg id="sq30Svg" width="200" height="330" viewBox="0 0 200 330" data-flipped="true" style="transform: scaleX(-1); transition: transform 0.2s ease;">
+                <polygon points="10,321.77 190,321.77 10,10" fill="rgba(224, 242, 254, 0.75)" stroke="#334155" stroke-width="3"/>
+                <g class="corner-group" onclick="toggleCornerDegText(this, '90°')">
+                  <circle cx="25" cy="305" r="30" fill="transparent"/>
+                  <text class="corner-text" x="35" y="305" font-size="16" font-weight="900" fill="#20429C" text-anchor="middle" dominant-baseline="central"></text>
+                </g>
+                <g class="corner-group" onclick="toggleCornerDegText(this, '60°')">
+                  <circle cx="165" cy="305" r="30" fill="transparent"/>
+                  <text class="corner-text" x="155" y="305" font-size="16" font-weight="900" fill="#20429C" text-anchor="middle" dominant-baseline="central"></text>
+                </g>
+                <g class="corner-group" onclick="toggleCornerDegText(this, '30°')">
+                  <circle cx="25" cy="30" r="30" fill="transparent"/>
+                  <text class="corner-text" x="28" y="52" font-size="16" font-weight="900" fill="#20429C" text-anchor="middle" dominant-baseline="central"></text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 5: 180°をこえる角 -->
+    <div id="page5" class="page">
+      <div class="quiz-layout">
+        <div class="quiz-header">
+          <div id="p5QuestionText" class="quiz-question-text">この角の大きさは何度でしょう？</div>
+          <div class="quiz-control-group">
+            <div class="angle-select-container">
+              <button class="angle-step-btn" onclick="stepAngle('p5Select', -5)">▼</button>
+              <select id="p5Select" class="angle-dropdown"></select>
+              <button class="angle-step-btn" onclick="stepAngle('p5Select', 5)">▲</button>
+            </div>
+            <button class="btn" style="background-color:#2563eb; color:#fff;" onclick="checkP5Answer()">答え合わせ</button>
+            <button class="btn" style="background-color:#f1f5f9; color:#334155; border: 1.5px solid #2563eb;" onclick="randomP5Question()">練習問題 🎲</button>
+            <button class="btn" style="background-color:#eff6ff; color:#2563eb; border: 1.5px solid #2563eb;" onclick="randomMixP5Question()">練習問題（ランダム） 🔀</button>
+          </div>
+        </div>
+        <div class="quiz-canvas-area" id="p5Area">
+          <canvas id="cvs5"></canvas>
+          <div id="p5CorrectOverlay" class="correct-overlay">
+            <svg class="correct-circle-svg" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="40" fill="none" stroke="#ef4444" stroke-width="12"/>
+            </svg>
+          </div>
+          <div id="prot5Wrapper" class="draggable-tool" style="left: 40px; top: 40px; transform: rotate(0deg); z-index: 100;">
+            <div id="rotHandle5" class="blue-rotation-handle" style="top: -14px; left: 230.5px;" title="回転">
+              <svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+            </div>
+            <div id="prot5">
+              <svg id="svgProt5" width="495" height="262.5" viewBox="0 0 330 175"></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL FOR P1 -->
+    <div id="modalP1" class="modal-overlay">
+      <div class="modal-content">
+        <button class="btn modal-close-btn" onclick="closeModal('modalP1')">✕</button>
+        <div class="modal-header">角のしくみ</div>
+        <div class="modal-body">
+          <p>
+            1つの頂点から出ている2つの辺がつくる形を<strong>角</strong>といいます。<br>
+            角のひらき具合を<strong>角の大きさ</strong>といいます。
+          </p>
+          <svg width="360" height="240" viewBox="0 0 360 240">
+            <line x1="60" y1="195" x2="300" y2="195" stroke="#334155" stroke-width="6"/>
+            <line x1="60" y1="195" x2="240" y2="45" stroke="#334155" stroke-width="6"/>
+            <path d="M 110 195 A 50 50 0 0 0 98.4 163" fill="none" stroke="#20429C" stroke-width="5"/>
+            <circle cx="60" cy="195" r="8" fill="#ef4444"/>
+            <text x="20" y="228" font-size="21" font-weight="bold" fill="#ef4444">頂点</text>
+            <text x="180" y="225" font-size="21" font-weight="bold">辺</text>
+            <text x="110" y="105" font-size="21" font-weight="bold">辺</text>
+            <text x="120" y="168" font-size="21" font-weight="bold" fill="#20429C">角の大きさ</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL FOR P2 -->
+    <div id="modalP2" class="modal-overlay">
+      <div class="modal-content" style="max-width: 680px; height: auto; max-height: 94%; overflow-y: auto;">
+        <button class="btn modal-close-btn" onclick="closeModal('modalP2')">✕</button>
+        <div class="modal-header" style="border-bottom: none; padding-bottom: 0;"></div>
+        <div class="modal-body" style="gap: 12px; justify-content: flex-start; padding-top: 0;">
+          <div style="width: 100%; display: flex; justify-content: center; margin-top: 4px;">
+            <svg id="modalProt2Svg" width="520" height="300" viewBox="0 0 520 300"></svg>
+          </div>
+          <div style="width: 100%; border-top: 2.5px solid #ea580c; border-bottom: 2.5px solid #ea580c; padding: 12px 6px; background-color: #ffffff; text-align: center;">
+            <p style="font-size: 1.35rem; font-weight: 800; color: #0f172a; margin-bottom: 6px; line-height: 1.4;">
+              <ruby>度<rt style="font-size: 0.75rem; color: #ea580c;">ど</rt></ruby>（°）は、角の大きさを表す<ruby>単位<rt style="font-size: 0.75rem; color: #ea580c;">たんい</rt></ruby>です。
+            </p>
+            <p style="font-size: 1.35rem; font-weight: 800; color: #0f172a; line-height: 1.4;">
+              角の大きさのことを<ruby>角<rt style="font-size: 0.75rem; color: #ea580c;">かく</rt></ruby><ruby>度<rt style="font-size: 0.75rem; color: #ea580c;">ど</rt></ruby>ともいいます。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STANDALONE MODAL FOR RIGHT ANGLE (90°) -->
+    <div id="modalP2RightAngle" class="modal-overlay">
+      <div class="modal-content" style="max-width: 580px; height: auto; max-height: 80%;">
+        <button class="btn modal-close-btn" onclick="closeModal('modalP2RightAngle')">✕</button>
+        <div class="modal-header">直角について</div>
+        <div class="modal-body" style="gap: 20px; justify-content: center; text-align: center; padding: 20px 0;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 30px;">
+            <svg width="140" height="140" viewBox="0 0 100 100">
+              <line x1="20" y1="10" x2="20" y2="85" stroke="#0f172a" stroke-width="4"/>
+              <line x1="20" y1="85" x2="95" y2="85" stroke="#0f172a" stroke-width="4"/>
+              <path d="M 20 65 L 40 65 L 40 85" fill="none" stroke="#ef4444" stroke-width="3"/>
+            </svg>
+            <div style="text-align: left;">
+              <p style="font-size: 2.2rem; font-weight: 900; color: #ef4444; margin-bottom: 8px;">
+                直角＝90°
+              </p>
+              <p style="font-size: 1.25rem; font-weight: 800; color: #334155; line-height: 1.6;">
+                直角（ちょっかく）は<br>
+                ちょうど <strong style="color: #2563eb;">90度（90°）</strong> の<br>
+                角のことです。
+              </p>
+            </div>
+          </div>
+
+          <div style="background-color: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 14px; width: 100%;">
+            <p style="font-size: 1.1rem; font-weight: 700; color: #475569;">
+              ノートの角や三角定規の角など、身の回りにもたくさんの「直角（90°）」があります！
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let activePageId = 'pageMenu';
+    let p1Angle = 0;
+    let isDraggingFan = false;
+    let isSwipingNumBar = false;
+    let isSimpleAngleMode = false;
+    let highestZIndex = 200;
+    let audioCtx = null;
+
+    function handleNumBarSwipe(e) {
+      if (!isSwipingNumBar) return;
+      const target = document.elementFromPoint(e.clientX, e.clientY);
+      if (target) {
+        const btn = target.closest('.num-btn');
+        if (btn) {
+          const deg = parseInt(btn.getAttribute('data-deg'), 10);
+          if (!isNaN(deg)) {
+            setP1Angle(deg);
+          }
+        }
+      }
+    }
+
+    const numBar = document.getElementById('p1NumBar');
+    if (numBar) {
+      numBar.addEventListener('pointerdown', (e) => {
+        isSwipingNumBar = true;
+        handleNumBarSwipe(e);
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (isSwipingNumBar) {
+          handleNumBarSwipe(e);
+        }
+      });
+      window.addEventListener('pointerup', () => { isSwipingNumBar = false; });
+      window.addEventListener('pointercancel', () => { isSwipingNumBar = false; });
+    }
+
+    let p2CurrentQ = null;
+    let p3CurrentQ = null;
+    let p4TargetAngle = 75;
+    let p5CurrentQ = null;
+
+    function initAngleSelect(selectId) {
+      const el = document.getElementById(selectId);
+      if(!el) return;
+      let html = '';
+      for(let i=0; i<=360; i+=5) {
+        html += `<option value="${i}">${i}°</option>`;
+      }
+      el.innerHTML = html;
+    }
+
+    function getAngleValue(selectId) {
+      const el = document.getElementById(selectId);
+      return el ? parseInt(el.value, 10) || 0 : 0;
+    }
+
+    function stepAngle(selectId, step) {
+      const el = document.getElementById(selectId);
+      if(!el) return;
+      let cur = parseInt(el.value, 10) || 0;
+      let next = Math.min(360, Math.max(0, cur + step));
+      el.value = next;
+    }
+
+    function playSound(type) {
+      try {
+        if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if(type === 'correct') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.12);
+          osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.24);
+          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.6);
+        } else {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.3);
+        }
+      } catch(e) {}
+    }
+
+    function goToHome() {
+      resetAllPagesState();
+      showPage('pageMenu');
+    }
+
+    function resetAllPagesState() {
+      p1Angle = 0;
+      isSimpleAngleMode = false;
+      drawP1();
+      updateP1Badge();
+
+      // 分度器を水平状態にリセット
+      ['prot3Wrapper', 'prot4Wrapper', 'prot5Wrapper'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+          el.style.transform = 'rotate(0deg)';
+          el.setAttribute('data-rotation', '0');
+        }
+      });
+
+      if(p2Questions && p2Questions.length) loadP2Question(p2Questions[0]);
+      if(p3Questions && p3Questions.length) loadP3Question(p3Questions[0]);
+      resetP4SetSquares();
+      if(p5Questions && p5Questions.length) loadP5Question(p5Questions[0]);
+
+      ['p2Select', 'p3Select', 'p4Select', 'p5Select'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.value = 0;
+      });
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      activePageId = pageId;
+
+      const homeBtn = document.getElementById('btnHome');
+      homeBtn.style.display = (pageId === 'pageMenu') ? 'none' : 'flex';
+
+      setTimeout(() => {
+        if(pageId === 'page1') { resizeCanvas('cvs1'); drawP1(); }
+        if(pageId === 'page2') { resizeCanvas('cvs2'); initP2(); }
+        if(pageId === 'page3') { resizeCanvas('cvs3'); initP3(); }
+        if(pageId === 'page4') { resizeCanvas('cvs4'); initP4(); }
+        if(pageId === 'page5') { resizeCanvas('cvs5'); initP5(); }
+      }, 60);
+    }
+
+    function openModal(id) { 
+      document.getElementById(id).style.display = 'flex'; 
+      if(id === 'modalP2') {
+        renderModalP2Protractor();
+      }
+    }
+
+    function closeModal(id) { 
+      document.getElementById(id).style.display = 'none'; 
+    }
+
+    function resizeCanvas(canvasId) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+    }
+
+    window.addEventListener('resize', () => {
+      ['cvs1', 'cvs2', 'cvs3', 'cvs4', 'cvs5'].forEach(id => resizeCanvas(id));
+      if (activePageId === 'page1') drawP1();
+      if (activePageId === 'page2') drawP2();
+      if (activePageId === 'page3') drawP3();
+      if (activePageId === 'page5') drawP5();
+    });
+
+    function buildPrecisionProtractor(svgId) {
+      const svg = document.getElementById(svgId);
+      if(!svg) return;
+      let html = `
+        <path d="M 15 165 A 150 150 0 0 1 315 165 Z" fill="rgba(224, 242, 254, 0.85)" stroke="#0284c7" stroke-width="2.5"/>
+        <line x1="15" y1="165" x2="315" y2="165" stroke="#0284c7" stroke-width="2.5"/>
+        <line x1="165" y1="165" x2="165" y2="153" stroke="#0284c7" stroke-width="2.5"/>
+        <circle cx="165" cy="165" r="4" fill="#0284c7"/>
+      `;
+
+      for(let deg = 0; deg <= 180; deg++) {
+        const rad = (180 - deg) * Math.PI / 180;
+        let len = 6;
+        if(deg % 10 === 0) len = 14;
+        else if(deg % 5 === 0) len = 10;
+
+        const x1 = 165 + 150 * Math.cos(rad);
+        const y1 = 165 - 150 * Math.sin(rad);
+        const x2 = 165 + (150 - len) * Math.cos(rad);
+        const y2 = 165 - (150 - len) * Math.sin(rad);
+
+        html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#0284c7" stroke-width="${deg%10===0?1.5:1}"/>`;
+
+        if(deg % 10 === 0) {
+          const tx1 = 165 + 128 * Math.cos(rad);
+          const ty1 = 165 - 128 * Math.sin(rad) + 4;
+          html += `<text x="${tx1}" y="${ty1}" font-size="9" font-weight="bold" fill="#0369a1" text-anchor="middle">${deg}</text>`;
+
+          const tx2 = 165 + 104 * Math.cos(rad);
+          const ty2 = 165 - 104 * Math.sin(rad) + 4;
+          html += `<text x="${tx2}" y="${ty2}" font-size="8" fill="#475569" text-anchor="middle">${180 - deg}</text>`;
+        }
+      }
+      svg.innerHTML = html;
+    }
+
+    function renderModalP2Protractor() {
+      const svg = document.getElementById('modalProt2Svg');
+      if(!svg) return;
+
+      const cx = 260;
+      const cy = 240;
+      const R = 180;
+
+      let html = `
+        <path d="M ${cx - R} ${cy} A ${R} ${R} 0 0 1 ${cx + R} ${cy} Z" fill="#e0f2fe" fill-opacity="0.35" stroke="#0284c7" stroke-width="2"/>
+        <line x1="${cx - R - 10}" y1="${cy}" x2="${cx + R + 10}" y2="${cy}" stroke="#0284c7" stroke-width="2"/>
+        
+        <path d="M ${cx - R*0.35} ${cy} A ${R*0.35} ${R*0.35} 0 0 1 ${cx + R*0.35} ${cy}" fill="none" stroke="#0284c7" stroke-width="1.2"/>
+        <path d="M ${cx - R*0.65} ${cy} A ${R*0.65} ${R*0.65} 0 0 1 ${cx + R*0.65} ${cy}" fill="none" stroke="#0284c7" stroke-width="1" stroke-dasharray="3,3"/>
+        
+        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - R}" stroke="#0284c7" stroke-width="1.2"/>
+        <circle cx="${cx}" cy="${cy}" r="3" fill="#0284c7"/>
+        <text x="${cx}" y="${cy - R*0.72}" font-size="18" font-weight="bold" fill="#0284c7" text-anchor="middle">90</text>
+      `;
+
+      for(let deg = 0; deg <= 180; deg++) {
+        const rad = (180 - deg) * Math.PI / 180;
+        let len = 7;
+        if(deg % 10 === 0) len = 16;
+        else if(deg % 5 === 0) len = 11;
+
+        const x1 = cx + R * Math.cos(rad);
+        const y1 = cy - R * Math.sin(rad);
+        const x2 = cx + (R - len) * Math.cos(rad);
+        const y2 = cy - (R - len) * Math.sin(rad);
+
+        html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#0284c7" stroke-width="${deg % 10 === 0 ? 1.5 : 0.8}"/>`;
+
+        if(deg % 10 === 0 && deg !== 90) {
+          const txOuter = cx + (R - 26) * Math.cos(rad);
+          const tyOuter = cy - (R - 26) * Math.sin(rad) + 4;
+          html += `<text x="${txOuter}" y="${tyOuter}" font-size="11" font-weight="bold" fill="#0369a1" text-anchor="middle">${deg}</text>`;
+
+          const txInner = cx + (R - 44) * Math.cos(rad);
+          const tyInner = cy - (R - 44) * Math.sin(rad) + 4;
+          html += `<text x="${txInner}" y="${tyInner}" font-size="10" fill="#0284c7" text-anchor="middle">${180 - deg}</text>`;
+        }
+      }
+
+      const targetDeg1 = 65;
+      const targetDeg2 = 66;
+      const rad1 = (180 - targetDeg1) * Math.PI / 180;
+      const rad2 = (180 - targetDeg2) * Math.PI / 180;
+
+      const rayX1 = cx + (R + 10) * Math.cos(rad1);
+      const rayY1 = cy - (R + 10) * Math.sin(rad1);
+      const rayX2 = cx + (R + 10) * Math.cos(rad2);
+      const rayY2 = cy - (R + 10) * Math.sin(rad2);
+
+      html += `
+        <line x1="${cx}" y1="${cy}" x2="${rayX1}" y2="${rayY1}" stroke="#0f172a" stroke-width="1.8"/>
+        <line x1="${cx}" y1="${cy}" x2="${rayX2}" y2="${rayY2}" stroke="#0f172a" stroke-width="1.8"/>
+
+        <path d="M ${cx + (R + 18) * Math.cos(rad1)} ${cy - (R + 18) * Math.sin(rad1)} L ${cx + (R + 28) * Math.cos(rad1)} ${cy - (R + 28) * Math.sin(rad1)}" stroke="#ea580c" stroke-width="1.5"/>
+        <path d="M ${cx + (R + 18) * Math.cos(rad2)} ${cy - (R + 18) * Math.sin(rad2)} L ${cx + (R + 28) * Math.cos(rad2)} ${cy - (R + 28) * Math.sin(rad2)}" stroke="#ea580c" stroke-width="1.5"/>
+        <line x1="${cx + (R + 25) * Math.cos(rad1)}" y1="${cy - (R + 25) * Math.sin(rad1)}" x2="${cx + (R + 25) * Math.cos(rad2)}" y2="${cy - (R + 25) * Math.sin(rad2)}" stroke="#ea580c" stroke-width="1.5"/>
+
+        <g transform="translate(${cx + (R + 42) * Math.cos(rad1)}, ${cy - (R + 42) * Math.sin(rad1) - 8})">
+          <text x="0" y="0" font-size="22" font-weight="900" fill="#0f172a">1°</text>
+          <text x="36" y="0" font-size="22" font-weight="900" fill="#0f172a">1度</text>
+          <text x="48" y="-18" font-size="11" font-weight="bold" fill="#0f172a">ど</text>
+        </g>
+      `;
+
+      svg.innerHTML = html;
+    }
+
+    function setP1Angle(deg) {
+      p1Angle = Math.min(360, Math.max(0, deg));
+      drawP1();
+      updateP1Badge();
+      updateP1NumBar();
+    }
+
+    function updateP1NumBar() {
+      document.querySelectorAll('#p1NumBar .num-btn').forEach(btn => {
+        const bDeg = parseInt(btn.getAttribute('data-deg'));
+        if(bDeg === p1Angle) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+    }
+
+    function updateP1Badge() {
+      const badge = document.getElementById('p1Badge');
+      if (p1Angle === 180) {
+        badge.innerText = "半回転";
+        badge.style.display = 'block';
+      } else if (p1Angle === 360) {
+        badge.innerText = "1回転";
+        badge.style.display = 'block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function drawP1() {
+      const cvs = document.getElementById('cvs1');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      const cx = cvs.width / 2;
+      const cy = cvs.height * 0.38;
+      const r = Math.min(cvs.width, cvs.height) * 0.36;
+      const endRad = -p1Angle * Math.PI / 180;
+
+      if (p1Angle > 0) {
+        if(isSimpleAngleMode) {
+          ctx.beginPath();
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + r, cy);
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + r * Math.cos(endRad), cy + r * Math.sin(endRad));
+          ctx.strokeStyle = '#0f172a';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(cx, cy, 45, 0, endRad, true);
+          ctx.strokeStyle = '#20429C';
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        } else {
+          const folds = Math.max(1, Math.floor(p1Angle / 10));
+          for (let i = 0; i < folds; i++) {
+            const a1 = - (i * (p1Angle / folds)) * Math.PI / 180;
+            const a2 = - ((i + 1) * (p1Angle / folds)) * Math.PI / 180;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, a1, a2, true);
+            ctx.closePath();
+            ctx.fillStyle = (i % 2 === 0) ? '#fef08a' : '#fde047';
+            ctx.fill();
+            ctx.strokeStyle = '#eab308';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+        }
+      } else {
+        // 0°の時は全円を描画しないように閉じた直線のみ描画
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.lineTo(cx + r, cy);
+        ctx.strokeStyle = isSimpleAngleMode ? '#0f172a' : '#eab308';
+        ctx.lineWidth = isSimpleAngleMode ? 4 : 3;
+        ctx.stroke();
+      }
+
+      const knobX = cx + r * Math.cos(endRad);
+      const knobY = cy + r * Math.sin(endRad);
+      
+      // 青い〇（ノブ）の描画
+      ctx.beginPath();
+      ctx.arc(knobX, knobY, 15, 0, Math.PI * 2);
+      ctx.fillStyle = '#2563eb';
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // ノブの中の矢印描画
+      ctx.save();
+      ctx.translate(knobX, knobY);
+      ctx.rotate(endRad);
+      
+      ctx.beginPath();
+      ctx.moveTo(0, 7);
+      ctx.lineTo(0, -7);
+      ctx.lineTo(-4, -2);
+      ctx.moveTo(0, -7);
+      ctx.lineTo(4, -2);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+
+    const p1Area = document.getElementById('p1Container');
+
+    p1Area.addEventListener('pointerdown', (e) => {
+      const cvs = document.getElementById('cvs1');
+      const rect = cvs.getBoundingClientRect();
+      const cx = rect.left + cvs.width / 2;
+      const cy = rect.top + cvs.height * 0.38;
+      const r = Math.min(cvs.width, cvs.height) * 0.36;
+      const endRad = -p1Angle * Math.PI / 180;
+      const knobX = cx + r * Math.cos(endRad);
+      const knobY = cy + r * Math.sin(endRad);
+
+      if (Math.hypot(e.clientX - knobX, e.clientY - knobY) < 35) {
+        isDraggingFan = true;
+      } else {
+        isSimpleAngleMode = !isSimpleAngleMode;
+        drawP1();
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (isDraggingFan) {
+        const cvs = document.getElementById('cvs1');
+        const rect = cvs.getBoundingClientRect();
+        const cx = rect.left + cvs.width / 2;
+        const cy = rect.top + cvs.height * 0.38;
+
+        let dx = e.clientX - cx;
+        let dy = e.clientY - cy;
+        let rad = Math.atan2(-dy, dx);
+        if (rad < 0) rad += Math.PI * 2;
+        let deg = Math.round(rad * 180 / Math.PI);
+
+        if (deg >= 355 || deg === 0) {
+          if (p1Angle > 300) deg = 360;
+        }
+
+        setP1Angle(deg);
+      }
+    });
+
+    window.addEventListener('pointerup', () => { isDraggingFan = false; });
+
+    function makeDraggableAndRotatable(elementId, handleId, onRotate, originX, originY, snapStep) {
+      const elm = document.getElementById(elementId);
+      if(!elm) return;
+      const handle = handleId ? document.getElementById(handleId) : null;
+
+      // 初期回転角度属性の確保
+      if (!elm.hasAttribute('data-rotation')) {
+        elm.setAttribute('data-rotation', '0');
+      }
+
+      // 回転中心のローカル座標
+      const ox = (originX !== undefined) ? originX : (elm.offsetWidth / 2);
+      const oy = (originY !== undefined) ? originY : (elm.offsetHeight / 2);
+      elm.style.transformOrigin = `${ox}px ${oy}px`;
+
+      elm.addEventListener('pointerdown', dragStart);
+
+      function dragStart(e) {
+        elm.style.zIndex = ++highestZIndex;
+
+        if (e.target.closest('.blue-rotation-handle') || e.target.tagName === 'BUTTON' || e.target.classList.contains('corner-group')) return;
+        
+        try { e.target.setPointerCapture(e.pointerId); } catch(err){}
+        e.preventDefault();
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startLeft = elm.offsetLeft;
+        const startTop = elm.offsetTop;
+
+        // 画面の拡大縮小率（スケール）を計算
+        const parent = elm.offsetParent || document.body;
+        const parentRect = parent.getBoundingClientRect();
+        const scaleX = parent.clientWidth ? (parentRect.width / parent.clientWidth) : 1;
+        const scaleY = parent.clientHeight ? (parentRect.height / parent.clientHeight) : 1;
+
+        function dragging(ev) {
+          const dx = (ev.clientX - startX) / (scaleX || 1);
+          const dy = (ev.clientY - startY) / (scaleY || 1);
+          elm.style.left = (startLeft + dx) + "px";
+          elm.style.top = (startTop + dy) + "px";
+        }
+
+        function dragEnd(ev) {
+          try { e.target.releasePointerCapture(ev.pointerId); } catch(err){}
+          document.removeEventListener('pointermove', dragging);
+          document.removeEventListener('pointerup', dragEnd);
+          document.removeEventListener('pointercancel', dragEnd);
+        }
+
+        document.addEventListener('pointermove', dragging);
+        document.addEventListener('pointerup', dragEnd);
+        document.addEventListener('pointercancel', dragEnd);
+      }
+
+      if (handle) {
+        handle.addEventListener('pointerdown', (e) => {
+          elm.style.zIndex = ++highestZIndex;
+          e.stopPropagation();
+          e.preventDefault();
+
+          try { handle.setPointerCapture(e.pointerId); } catch(err){}
+
+          const parent = elm.offsetParent || document.body;
+          const parentRect = parent.getBoundingClientRect();
+          const scaleX = parent.clientWidth ? (parentRect.width / parent.clientWidth) : 1;
+          const scaleY = parent.clientHeight ? (parentRect.height / parent.clientHeight) : 1;
+
+          // 未回転状態の基準座標に基づく絶対回転中心（画面空間）
+          const centerX = parentRect.left + (elm.offsetLeft + ox) * scaleX;
+          const centerY = parentRect.top + (elm.offsetTop + oy) * scaleY;
+
+          let prevMouseRad = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+          let currentDeg = parseFloat(elm.getAttribute('data-rotation')) || 0;
+
+          function rotateMove(ev) {
+            const currentMouseRad = Math.atan2(ev.clientY - centerY, ev.clientX - centerX);
+            let deltaRad = currentMouseRad - prevMouseRad;
+
+            // ±π(180度)の境界跨ぎを補正して連続回転を実現
+            while (deltaRad > Math.PI) deltaRad -= Math.PI * 2;
+            while (deltaRad < -Math.PI) deltaRad += Math.PI * 2;
+
+            currentDeg += deltaRad * (180 / Math.PI);
+            prevMouseRad = currentMouseRad;
+
+            let targetDeg = currentDeg;
+
+            // スナップ処理（必要な場合）
+            if (snapStep && snapStep > 0) {
+              const nearestSnap = Math.round(targetDeg / snapStep) * snapStep;
+              const snapThreshold = 3.5; // 自然でゆっくりとしたスナップ感に調整
+              if (Math.abs(targetDeg - nearestSnap) <= snapThreshold) {
+                targetDeg = nearestSnap;
+              }
+            }
+
+            elm.setAttribute('data-rotation', targetDeg.toString());
+            elm.style.transform = `rotate(${targetDeg}deg)`;
+            if(onRotate) onRotate(targetDeg);
+          }
+
+          function rotateEnd(ev) {
+            try { handle.releasePointerCapture(ev.pointerId); } catch(err){}
+            document.removeEventListener('pointermove', rotateMove);
+            document.removeEventListener('pointerup', rotateEnd);
+            document.removeEventListener('pointercancel', rotateEnd);
+          }
+
+          document.addEventListener('pointermove', rotateMove);
+          document.addEventListener('pointerup', rotateEnd);
+          document.addEventListener('pointercancel', rotateEnd);
+        });
+      }
+    }
+
+    const p2Questions = [
+      { text: "この角の大きさは何度でしょう？", angle: 50 },
+      { text: "この角の大きさは何度でしょう？", angle: 120 },
+      { text: "この角の大きさは何度でしょう？", angle: 90 },
+      { text: "この角の大きさは何度でしょう？", angle: 30 },
+      { text: "この角の大きさは何度でしょう？", angle: 150 },
+      { text: "この角の大きさは何度でしょう？", angle: 15 },
+      { text: "この角の大きさは何度でしょう？", angle: 135 },
+      { text: "この角の大きさは何度でしょう？", angle: 45 },
+      { text: "この角の大きさは何度でしょう？", angle: 110 },
+      { text: "この角の大きさは何度でしょう？", angle: 160 },
+      { text: "この角の大きさは何度でしょう？", angle: 25 },
+      { text: "この角の大きさは何度でしょう？", angle: 80 },
+      { text: "この角の大きさは何度でしょう？", angle: 100 },
+      { text: "この角の大きさは何度でしょう？", angle: 140 },
+      { text: "この角の大きさは何度でしょう？", angle: 65 },
+      { text: "この角の大きさは何度でしょう？", angle: 115 },
+      { text: "この角の大きさは何度でしょう？", angle: 170 },
+      { text: "この角の大きさは何度でしょう？", angle: 55 },
+      { text: "この角の大きさは何度でしょう？", angle: 85 },
+      { text: "この角の大きさは何度でしょう？", angle: 125 }
+    ];
+
+    function initP2() {
+      buildPrecisionProtractor('svgProt2');
+      makeDraggableAndRotatable('prot2');
+      initAngleSelect('p2Select');
+      loadP2Question(p2Questions[0]);
+    }
+
+    function loadP2Question(q) {
+      p2CurrentQ = q;
+      document.getElementById('p2QuestionText').innerText = q.text;
+      document.getElementById('p2CorrectOverlay').classList.remove('active');
+      drawP2();
+    }
+
+    function randomP2Question() {
+      const idx = Math.floor(Math.random() * p2Questions.length);
+      loadP2Question(p2Questions[idx]);
+    }
+
+    function drawP2() {
+      const cvs = document.getElementById('cvs2');
+      if (!cvs || !p2CurrentQ) return;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      const cx = cvs.width / 2;
+      const cy = cvs.height / 2 + 30;
+      const r = 300;
+      const endRad = -p2CurrentQ.angle * Math.PI / 180;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, 67.5, 0, endRad, true);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + r, cy);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + r * Math.cos(endRad), cy + r * Math.sin(endRad));
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 67.5, 0, endRad, true);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    function checkP2Answer() {
+      const val = getAngleValue('p2Select');
+      if (p2CurrentQ && val === p2CurrentQ.angle) {
+        playSound('correct');
+        const overlay = document.getElementById('p2CorrectOverlay');
+        overlay.classList.add('active');
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          randomP2Question();
+        }, 1300);
+      } else {
+        playSound('wrong');
+      }
+    }
+
+    const p3Questions = [
+      { text: "この角の大きさは何度でしょう？", angle: 40, rot: -25, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 135, rot: 35, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 50, rot: 180, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 120, rot: 180, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 30, rot: 150, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 140, rot: -160, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 70, rot: 180, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 110, rot: 200, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 25, rot: 180, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 155, rot: -135, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 75, rot: -60, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 60, rot: 15, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 85, rot: 130, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 100, rot: 180, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 45, rot: -15, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 65, rot: 210, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 150, rot: 20, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 130, rot: 180, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 35, rot: 160, type: 'angle' },
+      { text: "この角の大きさは何度でしょう？", angle: 160, rot: 180, type: 'angle' }
+    ];
+
+    function initP3() {
+      buildPrecisionProtractor('svgProt3');
+      makeDraggableAndRotatable('prot3Wrapper', 'rotHandle3', null, 247.5, 247.5);
+      initAngleSelect('p3Select');
+      loadP3Question(p3Questions[0]);
+    }
+
+    function loadP3Question(q) {
+      p3CurrentQ = q;
+      document.getElementById('p3QuestionText').innerText = q.text;
+      document.getElementById('p3CorrectOverlay').classList.remove('active');
+      drawP3();
+    }
+
+    function randomP3Question() {
+      const idx = Math.floor(Math.random() * p3Questions.length);
+      loadP3Question(p3Questions[idx]);
+    }
+
+    function drawP3() {
+      const cvs = document.getElementById('cvs3');
+      if (!cvs || !p3CurrentQ) return;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      const cx = cvs.width / 2;
+      const cy = cvs.height / 2 + 40;
+      const endRad = -p3CurrentQ.angle * Math.PI / 180;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+
+      const activeRot = (p3CurrentQ.type === 'triangle') ? 0 : p3CurrentQ.rot;
+      ctx.rotate(activeRot * Math.PI / 180);
+
+      if(p3CurrentQ.type === 'triangle') {
+        const rTri = 420;
+        const corner = p3CurrentQ.corner || 'left';
+        const halfA = (p3CurrentQ.angle * Math.PI / 180) / 2;
+
+        let x1=0, y1=0, x2=0, y2=0, arcStart=0, arcEnd=0, labelX=0, labelY=0;
+
+        if (corner === 'left') {
+          x1 = rTri; y1 = 0;
+          x2 = rTri * Math.cos(endRad); y2 = rTri * Math.sin(endRad);
+          arcStart = 0; arcEnd = endRad;
+          labelX = 48 * Math.cos(endRad/2);
+          labelY = 48 * Math.sin(endRad/2) + 6;
+        } else if (corner === 'right') {
+          const radA = p3CurrentQ.angle * Math.PI / 180;
+          x1 = -rTri; y1 = 0;
+          x2 = -rTri * Math.cos(radA); y2 = -rTri * Math.sin(radA);
+          arcStart = Math.PI - radA; arcEnd = Math.PI;
+          const midA = Math.PI - halfA;
+          labelX = 48 * Math.cos(midA);
+          labelY = -48 * Math.sin(halfA) + 6;
+        } else if (corner === 'top') {
+          x1 = -rTri * Math.sin(halfA); y1 = rTri * Math.cos(halfA);
+          x2 = rTri * Math.sin(halfA); y2 = rTri * Math.cos(halfA);
+          arcStart = Math.PI / 2 - halfA;
+          arcEnd = Math.PI / 2 + halfA;
+          labelX = 0;
+          labelY = 51;
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        if (corner === 'left') {
+          ctx.arc(0, 0, 67.5, arcStart, arcEnd, true);
+        } else {
+          ctx.arc(0, 0, 67.5, arcStart, arcEnd, false);
+        }
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.closePath();
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.beginPath();
+        if (corner === 'left') {
+          ctx.arc(0, 0, 67.5, arcStart, arcEnd, true);
+        } else {
+          ctx.arc(0, 0, 67.5, arcStart, arcEnd, false);
+        }
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.fillStyle = "#ef4444";
+        ctx.font = "bold 22px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("あ", labelX, labelY);
+      } else {
+        const r = 300;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, 67.5, 0, endRad, true);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(r, 0);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(r * Math.cos(endRad), r * Math.sin(endRad));
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 67.5, 0, endRad, true);
+        ctx.strokeStyle = '#0284c7';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function checkP3Answer() {
+      const val = getAngleValue('p3Select');
+      if (p3CurrentQ && val === p3CurrentQ.angle) {
+        playSound('correct');
+        const overlay = document.getElementById('p3CorrectOverlay');
+        overlay.classList.add('active');
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          randomP3Question();
+        }, 1300);
+      } else {
+        playSound('wrong');
+      }
+    }
+
+    const p4Questions = [
+      { text: "45°と30°をあわせた角は何度？", angle: 75 },
+      { text: "45°と60°をあわせた角は何度？", angle: 105 },
+      { text: "45°と90°をあわせた角は何度？", angle: 135 },
+      { text: "30°と60°をあわせた角は何度？", angle: 90 },
+      { text: "60°と90°をあわせた角は何度？", angle: 150 },
+      { text: "30°と90°をあわせた角は何度？", angle: 120 },
+      { text: "90°と90°をあわせた角は何度？", angle: 180 },
+      { text: "45°から30°をひいた角は何度？", angle: 15 },
+      { text: "60°から45°をひいた角は何度？", angle: 15 },
+      { text: "90°から45°をひいた角は何度？", angle: 45 },
+      { text: "90°から60°をひいた角は何度？", angle: 30 },
+      { text: "90°から30°をひいた角は何度？", angle: 60 }
+    ];
+
+    function initP4() {
+      buildPrecisionProtractor('svgProt4');
+      makeDraggableAndRotatable('prot4Wrapper', 'rotHandle4', null, 198, 198);
+      makeDraggableAndRotatable('sq45Wrapper', 'rotHandle45', null, undefined, undefined, 45);
+      makeDraggableAndRotatable('sq30Wrapper', 'rotHandle30', null, undefined, undefined, 30);
+      initAngleSelect('p4Select');
+      resetP4SetSquares();
+    }
+
+    function toggleP4Protractor() {
+      const prot = document.getElementById('prot4Wrapper');
+      if(!prot) return;
+      prot.style.display = (prot.style.display === 'none') ? 'block' : 'none';
+      if(prot.style.display === 'block') prot.style.zIndex = ++highestZIndex;
+    }
+
+    function flipSquare(svgId) {
+      const svg = document.getElementById(svgId);
+      if(!svg) return;
+      const curr = svg.getAttribute('data-flipped') === 'true';
+      svg.setAttribute('data-flipped', !curr);
+      svg.style.transform = !curr ? 'scaleX(-1)' : 'scaleX(1)';
+      updateSquareTextTransforms();
+    }
+
+    function updateSquareTextTransforms() {
+      ['sq45Svg', 'sq30Svg'].forEach(svgId => {
+        const svg = document.getElementById(svgId);
+        if(!svg) return;
+        const isFlipped = svg.getAttribute('data-flipped') === 'true';
+        const textElms = svg.querySelectorAll('.corner-text');
+        textElms.forEach(txt => {
+          const x = txt.getAttribute('x');
+          const y = txt.getAttribute('y');
+          if(isFlipped) {
+            txt.style.transform = 'scaleX(-1)';
+            txt.style.transformOrigin = `${x}px ${y}px`;
+            txt.style.transformBox = 'view-box';
+          } else {
+            txt.style.transform = 'none';
+          }
+        });
+      });
+    }
+
+    function resetP4SetSquares() {
+      const sq1 = document.getElementById('sq45Wrapper');
+      const sq2 = document.getElementById('sq30Wrapper');
+      const prot = document.getElementById('prot4Wrapper');
+      if(sq1) { 
+        sq1.style.left = '40px'; 
+        sq1.style.top = '40px'; 
+        sq1.style.transform = 'rotate(0deg)'; 
+        sq1.setAttribute('data-rotation', '0');
+      }
+      if(sq2) { 
+        sq2.style.left = '360px'; 
+        sq2.style.top = '40px'; 
+        sq2.style.transform = 'rotate(0deg)'; 
+        sq2.setAttribute('data-rotation', '0');
+      }
+      if(prot) {
+        prot.style.left = '550px';
+        prot.style.top = '20px';
+        prot.style.transform = 'rotate(0deg)';
+        prot.setAttribute('data-rotation', '0');
+        prot.style.display = 'none';
+      }
+
+      ['sq45Svg', 'sq30Svg'].forEach(svgId => {
+        const svg = document.getElementById(svgId);
+        if (svg) {
+          svg.setAttribute('data-flipped', 'true');
+          svg.style.transform = 'scaleX(-1)';
+          svg.querySelectorAll('.corner-text').forEach(txt => {
+            txt.textContent = '';
+          });
+        }
+      });
+      updateSquareTextTransforms();
+
+      document.getElementById('p4QuestionText').innerText = "45°と30°をあわせた角は何度？";
+      p4TargetAngle = 75;
+      document.getElementById('p4CorrectOverlay').classList.remove('active');
+    }
+
+    function toggleCornerDegText(groupElm, val) {
+      const textElm = groupElm.querySelector('text');
+      if (textElm) {
+        textElm.textContent = (textElm.textContent === val) ? '' : val;
+        updateSquareTextTransforms();
+      }
+    }
+
+    function randomP4Question() {
+      const q = p4Questions[Math.floor(Math.random() * p4Questions.length)];
+      p4TargetAngle = q.angle;
+      document.getElementById('p4QuestionText').innerText = q.text;
+      document.getElementById('p4CorrectOverlay').classList.remove('active');
+    }
+
+    function checkP4Answer() {
+      const val = getAngleValue('p4Select');
+      if(val === p4TargetAngle && p4TargetAngle !== 0) {
+        playSound('correct');
+        const overlay = document.getElementById('p4CorrectOverlay');
+        overlay.classList.add('active');
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          randomP4Question();
+        }, 1300);
+      } else {
+        playSound('wrong');
+      }
+    }
+
+    const p5Questions = [
+      { text: "この角の大きさは何度でしょう？", angle: 225 },
+      { text: "この角の大きさは何度でしょう？", angle: 180 },
+      { text: "この角の大きさは何度でしょう？", angle: 240 },
+      { text: "この角の大きさは何度でしょう？", angle: 270 },
+      { text: "この角の大きさは何度でしょう？", angle: 300 },
+      { text: "この角の大きさは何度でしょう？", angle: 210 },
+      { text: "この角の大きさは何度でしょう？", angle: 315 },
+      { text: "この角の大きさは何度でしょう？", angle: 185 },
+      { text: "この角の大きさは何度でしょう？", angle: 330 },
+      { text: "この角の大きさは何度でしょう？", angle: 200 },
+      { text: "この角の大きさは何度でしょう？", angle: 250 },
+      { text: "この角の大きさは何度でしょう？", angle: 290 },
+      { text: "この角の大きさは何度でしょう？", angle: 195 },
+      { text: "この角の大きさは何度でしょう？", angle: 340 },
+      { text: "この角の大きさは何度でしょう？", angle: 230 },
+      { text: "この角の大きさは何度でしょう？", angle: 260 },
+      { text: "この角の大きさは何度でしょう？", angle: 285 },
+      { text: "この角の大きさは何度でしょう？", angle: 305 },
+      { text: "この角の大きさは何度でしょう？", angle: 320 },
+      { text: "この角の大きさは何度でしょう？", angle: 350 }
+    ];
+
+    function initP5() {
+      buildPrecisionProtractor('svgProt5');
+      makeDraggableAndRotatable('prot5Wrapper', 'rotHandle5', null, 247.5, 247.5);
+      initAngleSelect('p5Select');
+      loadP5Question(p5Questions[0]);
+    }
+
+    function loadP5Question(q) {
+      p5CurrentQ = q;
+      document.getElementById('p5QuestionText').innerText = q.text;
+      document.getElementById('p5CorrectOverlay').classList.remove('active');
+      drawP5();
+    }
+
+    function randomP5Question() {
+      const idx = Math.floor(Math.random() * p5Questions.length);
+      loadP5Question(p5Questions[idx]);
+    }
+
+    function randomMixP5Question() {
+      const mixPool = [
+        ...p2Questions.map(q => ({ text: "この角の大きさは何度でしょう？", angle: q.angle, rot: 0 })),
+        ...p3Questions.filter(q => q.type === 'angle').map(q => ({ text: "この角の大きさは何度でしょう？", angle: q.angle, rot: q.rot || 0 })),
+        ...p5Questions.map(q => ({ text: "この角の大きさは何度でしょう？", angle: q.angle, rot: 0 }))
+      ];
+
+      const idx = Math.floor(Math.random() * mixPool.length);
+      loadP5Question(mixPool[idx]);
+    }
+
+    function drawP5() {
+      const cvs = document.getElementById('cvs5');
+      if (!cvs || !p5CurrentQ) return;
+      const ctx = cvs.getContext('2d');
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      const cx = cvs.width / 2;
+      // 頂点（中心）座標を全問題で統一
+      const cy = cvs.height / 2;
+      const r = 300;
+      const endRad = -p5CurrentQ.angle * Math.PI / 180;
+      const rotRad = (p5CurrentQ.rot || 0) * Math.PI / 180;
+      const arcR = p5CurrentQ.angle > 180 ? 75 : 67.5;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotRad);
+
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, arcR, 0, endRad, true);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(56, 189, 248, 0.35)";
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(r, 0);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(r * Math.cos(endRad), r * Math.sin(endRad));
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, arcR, 0, endRad, true);
+      ctx.strokeStyle = '#0284c7';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function checkP5Answer() {
+      const val = getAngleValue('p5Select');
+      if (p5CurrentQ && val === p5CurrentQ.angle) {
+        playSound('correct');
+        const overlay = document.getElementById('p5CorrectOverlay');
+        overlay.classList.add('active');
+        setTimeout(() => {
+          overlay.classList.remove('active');
+          randomP5Question();
+        }, 1300);
+      } else {
+        playSound('wrong');
+      }
+    }
+
+    window.onload = function() {
+      showPage('pageMenu');
+    };
+  </script>
+</body>
+</html>
